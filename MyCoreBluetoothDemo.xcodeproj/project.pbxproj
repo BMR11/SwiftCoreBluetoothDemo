@@ -10,13 +10,9 @@
 		585D475F2E3DE1D1006A4054 /* CentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D475E2E3DE1D1006A4054 /* CentralManager.swift */; };
 		585D476C2E3DECEE006A4054 /* MyPeripheralApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D476B2E3DECEE006A4054 /* MyPeripheralApp.swift */; };
 		585D476E2E3DECEE006A4054 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D476D2E3DECEE006A4054 /* ContentView.swift */; };
-		585D47702E3DECF0006A4054 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 585D476F2E3DECF0006A4054 /* Assets.xcassets */; };
-		585D47742E3DECF0006A4054 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 585D47732E3DECF0006A4054 /* Preview Assets.xcassets */; };
 		585D47942E3DED15006A4054 /* PeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D47632E3DEC84006A4054 /* PeripheralManager.swift */; };
 		58ABD49A2E3DDC51004F1031 /* MyCoreBluetoothDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58ABD4992E3DDC51004F1031 /* MyCoreBluetoothDemoApp.swift */; };
 		58ABD49C2E3DDC51004F1031 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58ABD49B2E3DDC51004F1031 /* ContentView.swift */; };
-		58ABD49E2E3DDC54004F1031 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58ABD49D2E3DDC54004F1031 /* Assets.xcassets */; };
-		58ABD4A22E3DDC54004F1031 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58ABD4A12E3DDC54004F1031 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,15 +22,11 @@
 		585D47692E3DECEE006A4054 /* MyPeripheral.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyPeripheral.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		585D476B2E3DECEE006A4054 /* MyPeripheralApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPeripheralApp.swift; sourceTree = "<group>"; };
 		585D476D2E3DECEE006A4054 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		585D476F2E3DECF0006A4054 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		585D47712E3DECF0006A4054 /* MyPeripheral.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyPeripheral.entitlements; sourceTree = "<group>"; };
-		585D47732E3DECF0006A4054 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		58ABD4962E3DDC51004F1031 /* MyCoreBluetoothDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyCoreBluetoothDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58ABD4992E3DDC51004F1031 /* MyCoreBluetoothDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCoreBluetoothDemoApp.swift; sourceTree = "<group>"; };
 		58ABD49B2E3DDC51004F1031 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		58ABD49D2E3DDC54004F1031 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		58ABD49F2E3DDC54004F1031 /* MyCoreBluetoothDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyCoreBluetoothDemo.entitlements; sourceTree = "<group>"; };
-		58ABD4A12E3DDC54004F1031 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,19 +61,9 @@
 				585D47632E3DEC84006A4054 /* PeripheralManager.swift */,
 				585D476B2E3DECEE006A4054 /* MyPeripheralApp.swift */,
 				585D476D2E3DECEE006A4054 /* ContentView.swift */,
-				585D476F2E3DECF0006A4054 /* Assets.xcassets */,
 				585D47712E3DECF0006A4054 /* MyPeripheral.entitlements */,
-				585D47722E3DECF0006A4054 /* Preview Content */,
 			);
 			path = MyPeripheral;
-			sourceTree = "<group>";
-		};
-		585D47722E3DECF0006A4054 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				585D47732E3DECF0006A4054 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		58ABD48D2E3DDC51004F1031 = {
@@ -108,20 +90,10 @@
 			children = (
 				58ABD4992E3DDC51004F1031 /* MyCoreBluetoothDemoApp.swift */,
 				58ABD49B2E3DDC51004F1031 /* ContentView.swift */,
-				58ABD49D2E3DDC54004F1031 /* Assets.xcassets */,
 				58ABD49F2E3DDC54004F1031 /* MyCoreBluetoothDemo.entitlements */,
-				58ABD4A02E3DDC54004F1031 /* Preview Content */,
 				585D475E2E3DE1D1006A4054 /* CentralManager.swift */,
 			);
 			path = MyCoreBluetoothDemo;
-			sourceTree = "<group>";
-		};
-		58ABD4A02E3DDC54004F1031 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				58ABD4A12E3DDC54004F1031 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,8 +175,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				585D47742E3DECF0006A4054 /* Preview Assets.xcassets in Resources */,
-				585D47702E3DECF0006A4054 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,8 +182,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				58ABD4A22E3DDC54004F1031 /* Preview Assets.xcassets in Resources */,
-				58ABD49E2E3DDC54004F1031 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,7 +219,7 @@
 				CODE_SIGN_ENTITLEMENTS = MyPeripheral/MyPeripheral.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyPeripheral/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 8H8Y4C2SQ8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -289,7 +257,7 @@
 				CODE_SIGN_ENTITLEMENTS = MyPeripheral/MyPeripheral.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyPeripheral/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 8H8Y4C2SQ8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -441,7 +409,7 @@
 				CODE_SIGN_ENTITLEMENTS = MyCoreBluetoothDemo/MyCoreBluetoothDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyCoreBluetoothDemo/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 8H8Y4C2SQ8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -480,7 +448,7 @@
 				CODE_SIGN_ENTITLEMENTS = MyCoreBluetoothDemo/MyCoreBluetoothDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyCoreBluetoothDemo/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 8H8Y4C2SQ8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
