@@ -21,8 +21,8 @@ struct ContentView: View {
     
     var bluetoothControls: some View {
         VStack {
-            Text("Bluetooth Controls")
-            HStack {
+            Text("BLE Peripheral Device")
+//            HStack {
                 Button("Start Advertising") {
                     peripheralManager.startAdvertising()
                 }
@@ -33,20 +33,20 @@ struct ContentView: View {
                 }
                 .tint(.red)
                 .disabled(!peripheralManager.isAdvertising)
-            }
+//            }
         }
     }
     
     var heartRateValue: some View {
         VStack {
-            Text("Heart Rate Value")
+            Text("Update and Notify")
                 .font(.title)
             HStack {
                 Button("-") {
                     peripheralManager.heartRateValue -= 1
                 }
-                TextField("❤️", value: $peripheralManager.heartRateValue, format: .number)
-                .frame(width: 100)
+                Text("\(peripheralManager.heartRateValue)")
+                
                 Button("+") {
                     peripheralManager.heartRateValue += 1
                 }
@@ -55,6 +55,6 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}
