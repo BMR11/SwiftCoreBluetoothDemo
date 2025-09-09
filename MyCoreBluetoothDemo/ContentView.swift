@@ -25,8 +25,8 @@ struct ContentView: View {
     
     var bluetoothControls: some View {
         VStack {
-            Text("Bluetooth Controls")
-            HStack {
+            Text("BLE Central Device")
+//            HStack {
                 Button("Start Scan") {
                     centralManager.startScanning()
                 }
@@ -37,7 +37,7 @@ struct ContentView: View {
                 }
                 .tint(.red)
                 .disabled(!centralManager.isScanning)
-            }
+//            }
         }
     }
     
@@ -85,7 +85,7 @@ struct ContentView: View {
                 
                 
                 if let heartRate = centralManager.heartRate {
-                    Text("❤️ \(heartRate) BPM")
+                    Text("\(heartRate)")
                         .font(.system(size: 100))
                         .fontDesign(.rounded)
                         .lineLimit(1)
@@ -102,6 +102,6 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}
