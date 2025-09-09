@@ -17,13 +17,14 @@ struct ContentView: View {
     
     var body: some View {
         GeometryReader { geometry in
+            let horizontalPadding = geometry.size.width * 0.05
             ScrollView {
                 VStack(spacing: 20) {
-                    bluetoothControls
-                    buttonControls
-                    ledControls
+                    bluetoothControls(horizontalPadding: horizontalPadding)
+                    buttonControls(horizontalPadding: horizontalPadding)
+                    ledControls(horizontalPadding: horizontalPadding)
                     if showDebugLog {
-                        debugLogView(deviceHeight: geometry.size.height)
+                        debugLogView(deviceHeight: geometry.size.height, horizontalPadding: horizontalPadding)
                     }
                 }
                 .font(.title2)
@@ -33,7 +34,7 @@ struct ContentView: View {
         }
     }
     
-    var bluetoothControls: some View {
+    func bluetoothControls(horizontalPadding: CGFloat) -> some View {
         HStack {
             Text("LBS Peripheral")
             Spacer()
@@ -51,9 +52,10 @@ struct ContentView: View {
             .buttonStyle(.bordered)
             .tint(.orange)
         }
+        .padding(.horizontal, horizontalPadding)
     }
     
-    var buttonControls: some View {
+    func buttonControls(horizontalPadding: CGFloat) -> some View {
         VStack(spacing: 12) {
             HStack {
                 Image(systemName: "button.programmable")
@@ -87,13 +89,18 @@ struct ContentView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
         )
+        .padding(.horizontal, horizontalPadding)
     }
     
-    var ledControls: some View {
+    func ledControls(horizontalPadding: CGFloat) -> some View {
         VStack(spacing: 12) {
             HStack {
-                Image(systemName: "lightbulb")
-                    .foregroundColor(.yellow)
+                Image(systemName: peripheralManager.ledState ? "lightbulb.fill" : "lightbulb")
+                    .foregroundColor(peripheralManager.ledState ? .yellow : .gray)
+                    .font(.largeTitle)
+                    .scaleEffect(peripheralManager.ledState ? 1.5 : 1.2)
+                    .shadow(color: peripheralManager.ledState ? .yellow : .clear, radius: peripheralManager.ledState ? 2 : 0)
+                    .animation(.easeInOut(duration: 0.4), value: peripheralManager.ledState)
                 Text("LED")
                     .font(.headline)
                 Spacer()
@@ -113,9 +120,10 @@ struct ContentView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(cardBorderColor, lineWidth: 1)
         )
+        .padding(.horizontal, horizontalPadding)
     }
     
-    func debugLogView(deviceHeight: CGFloat) -> some View {
+    func debugLogView(deviceHeight: CGFloat, horizontalPadding: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "terminal")
@@ -136,8 +144,8 @@ struct ContentView: View {
             
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 4) {
-                    ForEach(peripheralManager.debugLogs.indices, id: \.self) { index in
-                        Text(peripheralManager.debugLogs[index])
+                    ForEach(Array(peripheralManager.reversedDebugLogs.enumerated()), id: \.offset) { _, log in
+                        Text(log)
                             .font(.system(.caption, design: .monospaced))
                             .foregroundColor(.green)
                             .padding(.horizontal, 8)
@@ -157,7 +165,8 @@ struct ContentView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.green, lineWidth: 1)
         )
-        .padding(.horizontal)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, horizontalPadding)
     }
 }
 

@@ -32,6 +32,10 @@ final class PeripheralManager: NSObject, ObservableObject {
     @Published private(set) var isAdvertising = false
     @Published private(set) var debugLogs: [String] = []
     
+    var reversedDebugLogs: [String] {
+        debugLogs.reversed()
+    }
+    
     private var cbPeripheralManager: CBPeripheralManager!
     
     let buttonCharacteristic = CBMutableCharacteristic(

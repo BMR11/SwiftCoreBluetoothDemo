@@ -17,6 +17,7 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { proxy in
             let debugHeight = proxy.size.height * 0.35
+            let horizontalPadding = proxy.size.width * 0.05
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -28,7 +29,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .padding(.vertical)
                 }
-                debugView(height: debugHeight)
+                debugView(height: debugHeight, horizontalPadding: horizontalPadding)
             }
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
         }
@@ -121,8 +122,12 @@ struct ContentView: View {
                 // LED Control Section
                 VStack(spacing: 12) {
                     HStack {
-                        Image(systemName: "lightbulb")
-                            .foregroundColor(.yellow)
+                        Image(systemName: centralManager.ledState ? "lightbulb.fill" : "lightbulb")
+                            .foregroundColor(centralManager.ledState ? .yellow : .gray)
+                            .font(.title2)
+                            .scaleEffect(centralManager.ledState ? 1.3 : 1.0)
+                            .shadow(color: centralManager.ledState ? .yellow : .clear, radius: centralManager.ledState ? 2 : 0)
+                            .animation(.easeInOut(duration: 0.4), value: centralManager.ledState)
                         Text("LED")
                             .font(.subheadline)
                         Spacer()
@@ -152,44 +157,52 @@ struct ContentView: View {
         }
     }
     
-    func debugView(height: CGFloat) -> some View {
+    func debugView(height: CGFloat, horizontalPadding: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
+                Image(systemName: "terminal")
+                    .foregroundColor(.green)
                 Text("Debug Log")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .font(.headline)
+                    .foregroundColor(.green)
                 Spacer()
                 Button("Clear") {
                     centralManager.debugLogs.removeAll()
                 }
-                .font(.caption)
                 .buttonStyle(.bordered)
                 .tint(.red)
+                .controlSize(.small)
             }
+            .padding(.horizontal)
+            .padding(.top, 8)
             
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 4) {
                     ForEach(Array(centralManager.debugLogs.enumerated().reversed()), id: \.offset) { _, log in
                         Text(log)
-                            .font(.caption)
+                            .font(.system(.caption, design: .monospaced))
                             .foregroundColor(.green)
-                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 8)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
             }
+            .frame(height: height * 0.8)
             .background(Color.black)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-        .frame(height: height)
-        .padding()
-        .background(Color.black.opacity(0.8))
+        .background(Color.black.opacity(0.9))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                .stroke(Color.green, lineWidth: 1)
         )
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, horizontalPadding)
+        .padding(.bottom, 20)
     }
 }
 
