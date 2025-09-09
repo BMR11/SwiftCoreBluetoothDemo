@@ -73,7 +73,7 @@ struct ContentView: View {
     @ViewBuilder
     var connectedPeripheral: some View {
         if let connectedPeripheral = centralManager.connectedPeripheral {
-            VStack {
+            VStack(spacing: 20) {
                 Text("Connected Peripheral")
                 HStack {
                     Text("\(connectedPeripheral.nameWithFallbackID)")
@@ -83,20 +83,60 @@ struct ContentView: View {
                 }
                 .padding()
                 
-                
-                if let heartRate = centralManager.heartRate {
-                    Text("\(heartRate)")
-                        .font(.system(size: 100))
-                        .fontDesign(.rounded)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.3)
-                        .contentTransition(.numericText())
+                // Button State Section
+                VStack(spacing: 12) {
+                    HStack {
+                        Button("Read") {
+                            centralManager.readButtonState()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.blue)
+                        Spacer()
+                        Text(centralManager.buttonState ? "Pressed" : "Released")
+                            .font(.title3)
+                            .foregroundColor(centralManager.buttonState ? .green : .red)
+                            .fontWeight(.medium)
+                    }
+                    
                 }
+                .padding()
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(.systemGray4), lineWidth: 1)
+                )
+                
+                // LED Control Section
+                VStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "lightbulb")
+                            .foregroundColor(.yellow)
+                        Text("LED")
+                            .font(.headline)
+                        Spacer()
+                        Toggle("", isOn: Binding(
+                            get: { centralManager.ledState },
+                            set: { newValue in
+                                centralManager.ledState = newValue
+                                centralManager.writeLedState(newValue)
+                            }
+                        ))
+                        .toggleStyle(SwitchToggleStyle(tint: .green))
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(.systemGray4), lineWidth: 1)
+                )
             }
             .padding()
             .background(.white.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .animation(.default, value: centralManager.heartRate)
+            .animation(.default, value: centralManager.buttonState)
             .animation(.default, value: centralManager.connectedPeripheral)
         }
     }
