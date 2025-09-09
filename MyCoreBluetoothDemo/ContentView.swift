@@ -10,62 +10,73 @@ struct ContentView: View {
     
     @EnvironmentObject var centralManager: CentralManager
     
+    // Color constants
+    private let cardBackgroundColor = Color.gray.opacity(0.1)
+    private let cardBorderColor = Color.gray.opacity(0.3)
+    
     var body: some View {
-        VStack(spacing: 20) {
-            bluetoothControls
-            Spacer()
-            discoveredPeripherals
-            connectedPeripheral
-            Spacer()
+        GeometryReader { proxy in
+            let debugHeight = proxy.size.height * 0.35
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        bluetoothControls
+                        discoveredPeripherals
+                        connectedPeripheral
+                    }
+                    .font(.title2)
+                    .buttonStyle(.borderedProminent)
+                    .padding(.vertical)
+                }
+                debugView(height: debugHeight)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
         }
-        .font(.title)
-        .buttonStyle(.borderedProminent)
-        .padding(.vertical)
     }
     
     var bluetoothControls: some View {
-        VStack {
-            Text("BLE Central Device")
-//            HStack {
-                Button("Start Scan") {
+        HStack {
+            Text("BLE Central")
+            Button(centralManager.isScanning ? "Stop" : "Start") {
+                if centralManager.isScanning {
+                    centralManager.stopScanning()
+                } else {
                     centralManager.startScanning()
                 }
-                .tint(.green)
-                .disabled(centralManager.isScanning || !centralManager.isPoweredOn)
-                Button("Stop Scan") {
-                    centralManager.stopScanning()
-                }
-                .tint(.red)
-                .disabled(!centralManager.isScanning)
-//            }
+            }
+            .tint(centralManager.isScanning ? .red : .green)
+            .disabled(!centralManager.isPoweredOn)
         }
     }
     
     @ViewBuilder
     var discoveredPeripherals: some View {
         if centralManager.isScanning {
-            HStack {
-                Text("Discovering Peripherals")
-                ProgressView()
-                    .controlSize(.extraLarge)
-            }
-            List(centralManager.discoveredPeripherals, id: \.identifier) { peripheral in
+            VStack(spacing: 12) {
                 HStack {
-                    Text(peripheral.nameWithFallbackID)
-                    Spacer()
-                    Button("Connect") {
-                        centralManager.connect(to: peripheral)
-                    }
-                    .tint(.green)
+                    Text("Discovering Peripherals")
+                    ProgressView()
+                        .controlSize(.extraLarge)
                 }
-                .padding()
-                .background(.white.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .listRowBackground(EmptyView())
+                
+                if !centralManager.discoveredPeripherals.isEmpty {
+                    VStack(spacing: 8) {
+                        ForEach(centralManager.discoveredPeripherals, id: \.identifier) { peripheral in
+                            HStack {
+                                Text(peripheral.nameWithFallbackID)
+                                Spacer()
+                                Button("Connect") {
+                                    centralManager.connect(to: peripheral)
+                                }
+                                .tint(.green)
+                            }
+                            .padding()
+                            .background(.white.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                }
             }
-            .frame(minHeight: 0)
-            .scrollContentBackground(.hidden)
-            .listRowSeparator(.hidden)
             .animation(.default, value: centralManager.discoveredPeripherals)
         }
     }
@@ -93,18 +104,18 @@ struct ContentView: View {
                         .tint(.blue)
                         Spacer()
                         Text(centralManager.buttonState ? "Pressed" : "Released")
-                            .font(.title3)
+                            .font(.body)
                             .foregroundColor(centralManager.buttonState ? .green : .red)
                             .fontWeight(.medium)
                     }
                     
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(cardBackgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color(.systemGray4), lineWidth: 1)
+                        .stroke(cardBorderColor, lineWidth: 1)
                 )
                 
                 // LED Control Section
@@ -113,7 +124,7 @@ struct ContentView: View {
                         Image(systemName: "lightbulb")
                             .foregroundColor(.yellow)
                         Text("LED")
-                            .font(.headline)
+                            .font(.subheadline)
                         Spacer()
                         Toggle("", isOn: Binding(
                             get: { centralManager.ledState },
@@ -126,11 +137,11 @@ struct ContentView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(cardBackgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color(.systemGray4), lineWidth: 1)
+                        .stroke(cardBorderColor, lineWidth: 1)
                 )
             }
             .padding()
@@ -139,6 +150,46 @@ struct ContentView: View {
             .animation(.default, value: centralManager.buttonState)
             .animation(.default, value: centralManager.connectedPeripheral)
         }
+    }
+    
+    func debugView(height: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Debug Log")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                Spacer()
+                Button("Clear") {
+                    centralManager.debugLogs.removeAll()
+                }
+                .font(.caption)
+                .buttonStyle(.bordered)
+                .tint(.red)
+            }
+            
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(centralManager.debugLogs.enumerated().reversed()), id: \.offset) { _, log in
+                        Text(log)
+                            .font(.caption)
+                            .foregroundColor(.green)
+                            .textSelection(.enabled)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .background(Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .frame(height: height)
+        .padding()
+        .background(Color.black.opacity(0.8))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+        )
     }
 }
 

@@ -54,6 +54,7 @@ final class CentralManager: NSObject, ObservableObject {
     
     @Published var isPoweredOn = false
     @Published var isScanning = false
+    @Published var debugLogs: [String] = []
     
     var cbCentralManager: CBCentralManager!
     private var buttonCharacteristic: CBCharacteristic?
@@ -66,21 +67,25 @@ final class CentralManager: NSObject, ObservableObject {
     
     func startScanning() {
         guard isPoweredOn else {
+            addDebugLog("Cannot start scanning - Bluetooth not powered on")
             return
         }
         cbCentralManager.scanForPeripherals(withServices: [Gatt.Service.lbs])
         isScanning = true
+        addDebugLog("Started scanning for peripherals")
     }
     
     func stopScanning() {
         cbCentralManager.stopScan()
         isScanning = false
         discoveredPeripherals = []
+        addDebugLog("Stopped scanning for peripherals")
     }
     
     func connect(to peripheral: CBPeripheral) {
         connectedPeripheral = peripheral
         cbCentralManager.connect(peripheral)
+        addDebugLog("Attempting to connect to: \(peripheral.nameWithFallbackID)")
         stopScanning()
     }
     
@@ -88,6 +93,7 @@ final class CentralManager: NSObject, ObservableObject {
         guard let peripheral = connectedPeripheral else {
             return
         }
+        addDebugLog("Disconnecting from: \(peripheral.nameWithFallbackID)")
         cbCentralManager.cancelPeripheralConnection(peripheral)
         connectedPeripheral = nil
         buttonState = false
@@ -101,6 +107,7 @@ final class CentralManager: NSObject, ObservableObject {
               let characteristic = buttonCharacteristic else {
             return
         }
+        addDebugLog("Reading button state")
         peripheral.readValue(for: characteristic)
     }
     
@@ -110,6 +117,7 @@ final class CentralManager: NSObject, ObservableObject {
             return
         }
         let data = Data([state ? 1 : 0])
+        addDebugLog("Writing LED state: \(state ? "ON" : "OFF")")
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
 }
@@ -128,6 +136,7 @@ extension CentralManager: CBCentralManagerDelegate {
         rssi RSSI: NSNumber
     ) {
         Self.log.info("Discovered \(peripheral) with advertisement data \(advertisementData)")
+        addDebugLog("Discovered peripheral: \(peripheral.nameWithFallbackID)")
         if !discoveredPeripherals.contains(peripheral) {
             discoveredPeripherals.append(peripheral)
         }
@@ -138,6 +147,7 @@ extension CentralManager: CBCentralManagerDelegate {
         didConnect peripheral: CBPeripheral
     ) {
         Self.log.info("Connected to \(peripheral)")
+        addDebugLog("Connected to peripheral: \(peripheral.nameWithFallbackID)")
         peripheral.delegate = self
         peripheral.discoverServices([Gatt.Service.lbs])
     }
@@ -177,11 +187,13 @@ extension CentralManager: CBPeripheralDelegate {
         if let buttonChar = characteristics.first(where: { $0.uuid == Gatt.Characteristic.buttonCharacteristic }) {
             buttonCharacteristic = buttonChar
             peripheral.setNotifyValue(true, for: buttonChar)
+            addDebugLog("Found button characteristic and enabled notifications")
         }
         
         // Find LED characteristic
         if let ledChar = characteristics.first(where: { $0.uuid == Gatt.Characteristic.ledCharacteristic }) {
             ledCharacteristic = ledChar
+            addDebugLog("Found LED characteristic")
         }
     }
     
@@ -194,14 +206,30 @@ extension CentralManager: CBPeripheralDelegate {
         else {
             return
         }
-        buttonState = payload[0] != 0
+        let newState = payload[0] != 0
+        buttonState = newState
+        addDebugLog("Button state updated: \(newState ? "PRESSED" : "RELEASED")")
     }
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: (any Error)?) {
         if let error = error {
             Self.log.error("Failed to write to characteristic: \(error.localizedDescription)")
+            addDebugLog("Write failed: \(error.localizedDescription)")
         } else {
             Self.log.info("Successfully wrote to characteristic: \(characteristic.uuid)")
+            addDebugLog("Write successful to characteristic: \(characteristic.uuid)")
+        }
+    }
+    
+    private func addDebugLog(_ message: String) {
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+        let logMessage = "[\(timestamp)] \(message)"
+        DispatchQueue.main.async {
+            self.debugLogs.append(logMessage)
+            // Keep only last 100 logs to prevent memory issues
+            if self.debugLogs.count > 100 {
+                self.debugLogs.removeFirst()
+            }
         }
     }
 }

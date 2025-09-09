@@ -16,27 +16,36 @@ extension CBPeripheral {
 public enum Gatt {
     
     public enum Service {
-        public static let heartRate = CBUUID(string: "180D")
+        public static let lbs = CBUUID(string: "00001523-1212-EFDE-1523-785FEABCD123")
     }
     
     public enum Characteristic {
-        public static let heartRateMeasurement = CBUUID(string: "2A37")
+        public static let buttonCharacteristic = CBUUID(string: "00001524-1212-EFDE-1523-785FEABCD123")
+        public static let ledCharacteristic = CBUUID(string: "00001525-1212-EFDE-1523-785FEABCD123")
     }
 }
 final class PeripheralManager: NSObject, ObservableObject {
     
-    @Published var heartRateValue: UInt8 = 100
+    @Published var buttonState: Bool = false
+    @Published var ledState: Bool = false
     
     @Published private(set) var isAdvertising = false
-    @Published private(set) var sendHeartRateTask: Task<Void, Never>?
+    @Published private(set) var debugLogs: [String] = []
     
     private var cbPeripheralManager: CBPeripheralManager!
     
-    let heartRateCharacteristic = CBMutableCharacteristic(
-        type: Gatt.Characteristic.heartRateMeasurement,
-        properties: [.notify],
+    let buttonCharacteristic = CBMutableCharacteristic(
+        type: Gatt.Characteristic.buttonCharacteristic,
+        properties: [.read, .notify],
         value: nil,
         permissions: [.readable]
+    )
+    
+    let ledCharacteristic = CBMutableCharacteristic(
+        type: Gatt.Characteristic.ledCharacteristic,
+        properties: [.write],
+        value: nil,
+        permissions: [.writeable]
     )
     
     override init() {
@@ -45,83 +54,131 @@ final class PeripheralManager: NSObject, ObservableObject {
             delegate: self,
             queue: nil
         )
+        addDebugLog("PeripheralManager initialized")
     }
     
-    func setupHeartRateService() {
-        let heartRateService = CBMutableService(
-            type: Gatt.Service.heartRate,
+    private func addDebugLog(_ message: String) {
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+        let logMessage = "[\(timestamp)] \(message)"
+        debugLogs.append(logMessage)
+        // Keep only last 100 logs to prevent memory issues
+        if debugLogs.count > 100 {
+            debugLogs.removeFirst()
+        }
+    }
+    
+    func setupLBSService() {
+        let lbsService = CBMutableService(
+            type: Gatt.Service.lbs,
             primary: true
         )
-        heartRateService.characteristics = [heartRateCharacteristic]
-        cbPeripheralManager.add(heartRateService)
+        lbsService.characteristics = [buttonCharacteristic, ledCharacteristic]
+        cbPeripheralManager.add(lbsService)
+        addDebugLog("LBS service added with button and LED characteristics")
     }
     
     func startAdvertising() {
         isAdvertising = true
         let advertisementData: [String: Any] = [
-            CBAdvertisementDataServiceUUIDsKey: [Gatt.Service.heartRate]
+            CBAdvertisementDataServiceUUIDsKey: [Gatt.Service.lbs],
+            CBAdvertisementDataLocalNameKey: "LBS Peripheral"
         ]
         cbPeripheralManager.startAdvertising(advertisementData)
+        addDebugLog("Started advertising LBS service")
     }
     
     func stopAdvertising() {
         isAdvertising = false
         cbPeripheralManager.stopAdvertising()
-        stopSendingHeartRateValues()
-        Self.log.info("Stopped advertising")
+        addDebugLog("Stopped advertising")
     }
     
-    func repeatedlySendHeartRateValues() {
-        guard sendHeartRateTask == nil else {
-            return
-        }
-        sendHeartRateTask = Task {
-            while !Task.isCancelled {
-                sendHeartRateMeasurement()
-                try? await Task.sleep(for: .seconds(1))
-            }
-        }
-    }
-    
-    func stopSendingHeartRateValues() {
-        sendHeartRateTask?.cancel()
-        sendHeartRateTask = nil
-    }
-    
-    func sendHeartRateMeasurement() {
-        let variableHeartRate = UInt8.random(
-            in: (heartRateValue - 1) ... (heartRateValue + 1)
-        )
-        // Flags (0x00) + Heart Rate Value
-        let heartRateData = Data([0x00, variableHeartRate])
+    func updateButtonState(_ newState: Bool) {
+        buttonState = newState
+        let buttonData = Data([newState ? 1 : 0])
         cbPeripheralManager.updateValue(
-            heartRateData,
-            for: heartRateCharacteristic,
+            buttonData,
+            for: buttonCharacteristic,
             onSubscribedCentrals: nil
         )
-        Self.log.info("Sent heart rate value: \(variableHeartRate)")
+        addDebugLog("Button state updated: \(newState ? "PRESSED" : "RELEASED")")
+    }
+    
+    func handleLEDWrite(_ data: Data) {
+        guard data.count > 0 else { return }
+        let newLedState = data[0] != 0
+        ledState = newLedState
+        addDebugLog("LED state written by central: \(newLedState ? "ON" : "OFF")")
+    }
+    
+    func clearDebugLogs() {
+        debugLogs.removeAll()
     }
 }
 
 extension PeripheralManager: CBPeripheralManagerDelegate {
     
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-//        Self.log.info("PeripheralManager state: \(peripheral.state)")
+        let stateString = peripheral.state == .poweredOn ? "✅ Powered ON" : "❌ Powered OFF"
+        addDebugLog("📡 Peripheral Manager state changed: \(stateString)")
         if peripheral.state == .poweredOn {
-            setupHeartRateService()
+            setupLBSService()
             startAdvertising()
         }
     }
     
-    // CBPeripheralManagerDelegate
     func peripheralManager(
         _ peripheral: CBPeripheralManager,
         central: CBCentral,
         didSubscribeTo characteristic: CBCharacteristic
     ) {
-        if characteristic.uuid == Gatt.Characteristic.heartRateMeasurement {
-            stopAdvertising()
-            repeatedlySendHeartRateValues()
+        addDebugLog("✅ Central subscribed to characteristic: \(characteristic.uuid)")
+        if characteristic.uuid == Gatt.Characteristic.buttonCharacteristic {
+            addDebugLog("📨 Button characteristic subscribed - notifications enabled")
+        }
+    }
+    
+    func peripheralManager(
+        _ peripheral: CBPeripheralManager,
+        central: CBCentral,
+        didUnsubscribeFrom characteristic: CBCharacteristic
+    ) {
+        addDebugLog("❌ Central unsubscribed from characteristic: \(characteristic.uuid)")
+    }
+    
+    func peripheralManager(
+        _ peripheral: CBPeripheralManager,
+        didReceiveRead request: CBATTRequest
+    ) {
+        addDebugLog("📖 Read request for characteristic: \(request.characteristic.uuid)")
+        
+        if request.characteristic.uuid == Gatt.Characteristic.buttonCharacteristic {
+            let buttonData = Data([buttonState ? 1 : 0])
+            request.value = buttonData
+            peripheral.respond(to: request, withResult: .success)
+            addDebugLog("📤 Responded with button state: \(buttonState ? "PRESSED" : "RELEASED")")
+        } else {
+            peripheral.respond(to: request, withResult: .attributeNotFound)
+        }
+    }
+    
+    func peripheralManager(
+        _ peripheral: CBPeripheralManager,
+        didReceiveWrite requests: [CBATTRequest]
+    ) {
+        for request in requests {
+            addDebugLog("✍️ Write request for characteristic: \(request.characteristic.uuid)")
+            
+            if request.characteristic.uuid == Gatt.Characteristic.ledCharacteristic {
+                if let data = request.value {
+                    handleLEDWrite(data)
+                    peripheral.respond(to: request, withResult: .success)
+                } else {
+                    peripheral.respond(to: request, withResult: .invalidPdu)
+                }
+            } else {
+                peripheral.respond(to: request, withResult: .attributeNotFound)
+            }
         }
     }
 }
