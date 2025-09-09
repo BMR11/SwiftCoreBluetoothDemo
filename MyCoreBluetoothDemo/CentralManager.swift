@@ -5,7 +5,6 @@
 //
 
 import CoreBluetooth
-import OSLog
 
 
 extension CBPeripheral {
@@ -15,29 +14,13 @@ extension CBPeripheral {
     }
 }
 
-//extension CBManagerState: @retroactive CustomStringConvertible {
-//    
-//    public var description: String {
-//        switch self {
-//        case .resetting: "resetting"
-//        case .unsupported: "unsupported"
-//        case .unauthorized: "unauthorized"
-//        case .poweredOff: "poweredOff"
-//        case .poweredOn: "poweredOn"
-//        default: "unknown"
-//        }
-//    }
-//}
-
 public enum Gatt {
     
     public enum Service {
-        public static let heartRate = CBUUID(string: "180D")
         public static let lbs = CBUUID(string: "00001523-1212-EFDE-1523-785FEABCD123")
     }
     
     public enum Characteristic {
-        public static let heartRateMeasurement = CBUUID(string: "2A37")
         public static let buttonCharacteristic = CBUUID(string: "00001524-1212-EFDE-1523-785FEABCD123")
         public static let ledCharacteristic = CBUUID(string: "00001525-1212-EFDE-1523-785FEABCD123")
         
@@ -125,7 +108,6 @@ final class CentralManager: NSObject, ObservableObject {
 extension CentralManager: CBCentralManagerDelegate {
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-//        Self.log.info("Central state: \(central.state)")
         isPoweredOn = central.state == .poweredOn
     }
     
@@ -135,7 +117,6 @@ extension CentralManager: CBCentralManagerDelegate {
         advertisementData: [String : Any],
         rssi RSSI: NSNumber
     ) {
-        Self.log.info("Discovered \(peripheral) with advertisement data \(advertisementData)")
         addDebugLog("Discovered peripheral: \(peripheral.nameWithFallbackID)")
         if !discoveredPeripherals.contains(peripheral) {
             discoveredPeripherals.append(peripheral)
@@ -146,7 +127,6 @@ extension CentralManager: CBCentralManagerDelegate {
         _ central: CBCentralManager,
         didConnect peripheral: CBPeripheral
     ) {
-        Self.log.info("Connected to \(peripheral)")
         addDebugLog("Connected to peripheral: \(peripheral.nameWithFallbackID)")
         peripheral.delegate = self
         peripheral.discoverServices([Gatt.Service.lbs])
@@ -159,7 +139,6 @@ extension CentralManager: CBPeripheralDelegate {
         _ peripheral: CBPeripheral,
         didDiscoverServices error: (any Error)?
     ) {
-        Self.log.info("didDiscoverServices \(peripheral.services ?? []) for \(peripheral)")
         guard
             error == nil,
             let services = peripheral.services,
@@ -175,7 +154,6 @@ extension CentralManager: CBPeripheralDelegate {
         didDiscoverCharacteristicsFor service: CBService,
         error: (any Error)?
     ) {
-        Self.log.info("didDiscoverCharacteristics \(service.characteristics ?? []) for \(peripheral)")
         guard
             error == nil,
             let characteristics = service.characteristics
@@ -213,10 +191,8 @@ extension CentralManager: CBPeripheralDelegate {
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: (any Error)?) {
         if let error = error {
-            Self.log.error("Failed to write to characteristic: \(error.localizedDescription)")
             addDebugLog("Write failed: \(error.localizedDescription)")
         } else {
-            Self.log.info("Successfully wrote to characteristic: \(characteristic.uuid)")
             addDebugLog("Write successful to characteristic: \(characteristic.uuid)")
         }
     }
@@ -232,8 +208,4 @@ extension CentralManager: CBPeripheralDelegate {
             }
         }
     }
-}
-
-extension CentralManager {
-    static let log = Logger(subsystem: "mydemo", category: "\(CentralManager.self)")
 }
