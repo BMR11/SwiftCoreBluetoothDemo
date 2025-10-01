@@ -61,12 +61,13 @@ open SwiftCoreBluetoothDemo.xcodeproj
 
 
 📚 References
-[Apple Core Bluetooth Framework](https://developer.apple.com/documentation/corebluetooth)
-[Nordic nRF52 Light Button Service](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/samples/bluetooth/peripheral_lbs/README.html)
-👤 Author
-Rajni Gediya
+- [Apple Core Bluetooth Framework](https://developer.apple.com/documentation/corebluetooth)
+- [Nordic nRF52 Light Button Service](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/samples/bluetooth/peripheral_lbs/README.html)
+
+👤 Author: Rajni Gediya
 Staff Software Engineer | BLE Medical Device & App Systems
-🌐 [rajni.dev](https://www.rajni.dev)
-💼 [LinkedIn](https://www.linkedin.com/in/rajni-gediya-ab893b38)
-✍️ [Medium](https://medium.com/@rajnibhaimgediya)
+- 🌐 [rajni.dev](https://www.rajni.dev)
+- 💼 [LinkedIn](https://www.linkedin.com/in/rajni-gediya-ab893b38)
+- ✍️ [Medium](https://medium.com/@rajnibhaimgediya)
+  
 ---
