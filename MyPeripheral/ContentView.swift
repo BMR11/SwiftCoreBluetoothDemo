@@ -170,7 +170,7 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .environmentObject(PeripheralManager())
-}
+//#Preview {
+//    ContentView()
+//        .environmentObject(PeripheralManager())
+//}

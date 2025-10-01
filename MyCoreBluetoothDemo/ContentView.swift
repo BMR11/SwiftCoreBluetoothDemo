@@ -206,7 +206,7 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .environmentObject(CentralManager())
-}
+//#Preview {
+//    ContentView()
+//        .environmentObject(CentralManager())
+//}

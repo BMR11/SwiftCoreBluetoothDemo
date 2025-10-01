@@ -122,6 +122,7 @@ final class PeripheralManager: NSObject, ObservableObject {
 
 extension PeripheralManager: CBPeripheralManagerDelegate {
     
+    // To get Ble state updates
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         let stateString = peripheral.state == .poweredOn ? "✅ Powered ON" : "❌ Powered OFF"
         addDebugLog("📡 Peripheral Manager state changed: \(stateString)")
@@ -130,6 +131,7 @@ extension PeripheralManager: CBPeripheralManagerDelegate {
             startAdvertising()
         }
     }
+    
     
     func peripheralManager(
         _ peripheral: CBPeripheralManager,
