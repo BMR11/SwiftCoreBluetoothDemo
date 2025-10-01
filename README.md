@@ -32,10 +32,10 @@ These are not step-by-step tutorials — they are **connectivity demos** that il
 ---
 
 ## 🎥 Demo Videos
-- [iOS as Central – Connecting to Mac Peripheral & nRF52](https://youtu.be/Ry7YjdPVIfE) 
-- [Mac as Central – Connecting to iOS Peripheral & nRF52](https://youtu.be/kZ4yPA55GU8)  
-
-*(Links will be updated once the videos are uploaded — they will be unlisted YouTube links, embedded on [rajni.dev](https://rajni.dev/talks) as well.)*
+- [Mac as Central – Connecting to iOS Peripheral & nRF52](https://youtu.be/kZ4yPA55GU8)
+- [![Youtube Video](https://github.com/user-attachments/assets/1787618b-f12b-466e-8162-1237d36ac2b6)](https://youtu.be/kZ4yPA55GU8)
+- [iOS as Central – Connecting to Mac Peripheral & nRF52](https://youtu.be/Ry7YjdPVIfE)
+- [![Youtube Video]( https://github.com/user-attachments/assets/10818c40-f4ba-4fcc-b25f-bed4e60aef7a )](https://youtu.be/Ry7YjdPVIfE)
 
 ---
 
