@@ -8,6 +8,8 @@ This was presented at [San Diego iOS Developers](https://www.meetup.com/sdiosdev
 
 ![event-flyer-2](https://github.com/user-attachments/assets/0646d22d-ef41-446f-85cc-e7e2ea7762a7)
 
+[Talk Slides](https://youtu.be/DEIUoCBlQmY)
+[![Youtube Video](https://github.com/user-attachments/assets/a2622873-6fe8-44d5-9162-704aee47dd01)](https://youtu.be/DEIUoCBlQmY)
 
 ---
 
