@@ -55,6 +55,10 @@ Clone the repo and open in Xcode:
 git clone https://github.com/BMR11/SwiftCoreBluetoothDemo.git
 cd SwiftCoreBluetoothDemo
 open SwiftCoreBluetoothDemo.xcodeproj
+```
+
+---
+
 
 📚 References
 [Apple Core Bluetooth Framework](https://developer.apple.com/documentation/corebluetooth)
@@ -65,3 +69,4 @@ Staff Software Engineer | BLE Medical Device & App Systems
 🌐 [rajni.dev](https://www.rajni.dev)
 💼 [LinkedIn](https://www.linkedin.com/in/rajni-gediya-ab893b38)
 ✍️ [Medium](https://medium.com/@rajnibhaimgediya)
+---
