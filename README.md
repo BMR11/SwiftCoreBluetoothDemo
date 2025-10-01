@@ -4,6 +4,10 @@ This repository contains **practical demos** using Apple’s Core Bluetooth fram
 The focus is on showing how **iOS and macOS devices communicate with each other and with Nordic nRF52 development boards** using Bluetooth Low Energy (BLE).
 
 These are not step-by-step tutorials — they are **connectivity demos** that illustrate how Central and Peripheral roles work in real-world scenarios.
+This was presented at [San Diego iOS Developers](https://www.meetup.com/sdiosdevelopers/), as part of [Interfacing with Bluetooth Devices in Swift](https://www.meetup.com/sdiosdevelopers/events/310565470/?eventOrigin=group_calendar) talk on September 9th, 2025.
+
+![event-flyer-2](https://github.com/user-attachments/assets/0646d22d-ef41-446f-85cc-e7e2ea7762a7)
+
 
 ---
 
