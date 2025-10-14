@@ -22,12 +22,14 @@ public enum Gatt {
     public enum Characteristic {
         public static let buttonCharacteristic = CBUUID(string: "00001524-1212-EFDE-1523-785FEABCD123")
         public static let ledCharacteristic = CBUUID(string: "00001525-1212-EFDE-1523-785FEABCD123")
+        public static let batteryCharacteristic = CBUUID(string: "00001111-1212-EFDE-1523-785FEABCD123")
     }
 }
 final class PeripheralManager: NSObject, ObservableObject {
     
     @Published var buttonState: Bool = false
     @Published var ledState: Bool = false
+    @Published var batteryLevel: Int = 11
     
     @Published private(set) var isAdvertising = false
     @Published private(set) var debugLogs: [String] = []
@@ -50,6 +52,13 @@ final class PeripheralManager: NSObject, ObservableObject {
         properties: [.write],
         value: nil,
         permissions: [.writeable]
+    )
+    
+    let batteryCharacteristic = CBMutableCharacteristic(
+        type: Gatt.Characteristic.batteryCharacteristic,
+        properties: [.read, .notify],
+        value: nil,
+        permissions: [.readable]
     )
     
     override init() {
@@ -76,9 +85,9 @@ final class PeripheralManager: NSObject, ObservableObject {
             type: Gatt.Service.lbs,
             primary: true
         )
-        lbsService.characteristics = [buttonCharacteristic, ledCharacteristic]
+        lbsService.characteristics = [buttonCharacteristic, ledCharacteristic, batteryCharacteristic]
         cbPeripheralManager.add(lbsService)
-        addDebugLog("LBS service added with button and LED characteristics")
+        addDebugLog("LBS service added with button, LED, and battery characteristics")
     }
     
     func startAdvertising() {
@@ -117,6 +126,25 @@ final class PeripheralManager: NSObject, ObservableObject {
     
     func clearDebugLogs() {
         debugLogs.removeAll()
+    }
+    
+    func updateBatteryLevel(_ newLevel: Int) {
+        batteryLevel = max(0, min(100, newLevel)) // Clamp between 0-100
+        let batteryData = Data([UInt8(batteryLevel)])
+        cbPeripheralManager.updateValue(
+            batteryData,
+            for: batteryCharacteristic,
+            onSubscribedCentrals: nil
+        )
+        addDebugLog("Battery level updated: \(batteryLevel)%")
+    }
+    
+    func incrementBattery() {
+        updateBatteryLevel(batteryLevel + 1)
+    }
+    
+    func decrementBattery() {
+        updateBatteryLevel(batteryLevel - 1)
     }
 }
 
@@ -163,6 +191,11 @@ extension PeripheralManager: CBPeripheralManagerDelegate {
             request.value = buttonData
             peripheral.respond(to: request, withResult: .success)
             addDebugLog("📤 Responded with button state: \(buttonState ? "PRESSED" : "RELEASED")")
+        } else if request.characteristic.uuid == Gatt.Characteristic.batteryCharacteristic {
+            let batteryData = Data([UInt8(batteryLevel)])
+            request.value = batteryData
+            peripheral.respond(to: request, withResult: .success)
+            addDebugLog("📤 Responded with battery level: \(batteryLevel)%")
         } else {
             peripheral.respond(to: request, withResult: .attributeNotFound)
         }

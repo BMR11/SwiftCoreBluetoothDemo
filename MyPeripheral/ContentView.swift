@@ -23,6 +23,7 @@ struct ContentView: View {
                     bluetoothControls(horizontalPadding: horizontalPadding)
                     buttonControls(horizontalPadding: horizontalPadding)
                     ledControls(horizontalPadding: horizontalPadding)
+                    batteryControls(horizontalPadding: horizontalPadding)
                     if showDebugLog {
                         debugLogView(deviceHeight: geometry.size.height, horizontalPadding: horizontalPadding)
                     }
@@ -112,6 +113,60 @@ struct ContentView: View {
             Text("LED controlled by central device")
                 .font(.caption)
                 .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(cardBackgroundColor)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(cardBorderColor, lineWidth: 1)
+        )
+        .padding(.horizontal, horizontalPadding)
+    }
+    
+    func batteryControls(horizontalPadding: CGFloat) -> some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "battery.100")
+                    .foregroundColor(.green)
+                Text("Battery")
+                    .font(.headline)
+                Spacer()
+                Text("\(peripheralManager.batteryLevel)%")
+                    .font(.title3)
+                    .foregroundColor(.green)
+                    .fontWeight(.medium)
+            }
+            
+            HStack(spacing: 20) {
+                Button("-") {
+                    peripheralManager.decrementBattery()
+                }
+                .buttonStyle(.bordered)
+                .tint(.red)
+                .font(.title2)
+                .frame(width: 50, height: 50)
+                
+                TextField("Battery Level", text: Binding(
+                    get: { String(peripheralManager.batteryLevel) },
+                    set: { 
+                        if let value = Int($0) {
+                            peripheralManager.updateBatteryLevel(value)
+                        }
+                    }
+                ))
+                .textFieldStyle(.roundedBorder)
+                .multilineTextAlignment(.center)
+                .frame(width: 100)
+                
+                Button("+") {
+                    peripheralManager.incrementBattery()
+                }
+                .buttonStyle(.bordered)
+                .tint(.green)
+                .font(.title2)
+                .frame(width: 50, height: 50)
+            }
         }
         .padding()
         .background(cardBackgroundColor)
